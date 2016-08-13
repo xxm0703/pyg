@@ -6,7 +6,7 @@ pygame.init()
 BLACK = (  0,   0,   0)
 WHITE = (255, 255, 255)
 
-size = [300, 300]
+size = [400, 400]
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Tic Tac Toe")
 
@@ -19,9 +19,9 @@ while not done:
     
     screen.fill(WHITE)
     y = 0
-    while y < 300:
+    while y < 400:
         x = 0    
-        while x < 300:
+        while x < 400:
              pygame.draw.rect(screen, BLACK, [x, y, 100, 100], 2)
              x += 100
         y += 100
