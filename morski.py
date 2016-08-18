@@ -12,18 +12,19 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Tic Tac Toe")
 
 class exes (object):
-    def __init__(self, m):
-        self.x = (m%1*1000)-100
-        self.y = (m-m%1)*100-100
+    def __init__(self, x, y):
+        self.x = x * 100
+        self.y = y * 100
     def draw(self):
         pygame.draw.line(screen, BLACK, [self.x+6,self.y+6], [self.x+94, self.y+94], 3)
         pygame.draw.line(screen, BLACK, [self.x+94,self.y+6], [self.x+6, self.y+94], 3)    
         print self.x
         print self.y
+        
 class circles(object):
-    def __init__(self, m):
-        self.x = (m%1*1000)-100
-        self.y = (m-m%1)*100-100
+    def __init__(self, x, y):
+        self.x = x * 100
+        self.y = y * 100
     def draw(self):
         pygame.draw.ellipse(screen, BLACK, [self.x+6, self.y+6, 88, 88], 3)                   
 
@@ -44,85 +45,52 @@ while not done:
         y += 100
     pygame.display.flip()
     b = 0
-    l = []
-    p = []
+    X = "X"
+    O = "O"
+    E = "."
+    
+    def win():
+        return  (d[0][0] == d[0][1] == d[0][2] != E
+              or d[1][0] == d[1][1] == d[1][2] != E
+              or d[2][0] == d[2][1] == d[2][2] != E
+              or d[0][0] == d[1][0] == d[2][0] != E
+              or d[0][1] == d[1][1] == d[2][1] != E
+              or d[0][2] == d[1][2] == d[2][2] != E
+              or d[1][1] == d[2][2] == d[0][0] != E
+              or d[0][2] == d[2][0] == d[1][1] != E)
+    
+    d = [[E,E,E],
+         [E,E,E],
+         [E,E,E]]
+         
     while b != 3:
         a = input("Enter cell: ")
-        if b == 0:
-            l.append(a)
-            if 1.3 in l and 1.2 in l and 1.1 in l:
-                print "'X' WIN!"
-                b = 3
-            if 2.3 in l and 2.2 in l and 2.1 in l:
-                print "'X' WIN!"
-                b = 3
-            if 3.3 in l and 3.2 in l and 3.1 in l:
-                print "'X' WIN!"
-                b = 3
-            if 1.3 in l and 2.3 in l and 3.3 in l:
-                print "'X' WIN!"
-                b = 3
-            if 1.2 in l and 2.2 in l and 3.2 in l:
-                print "'X' WIN!"
-                b = 3
-            if 1.1 in l and 2.1 in l and 3.1 in l:
-                print "'X' WIN!"
-                b = 3
-            if 1.1 in l and 2.2 in l and 3.3 in l:
-                print "'X' WIN!"
-                b = 3
-            if 3.1 in l and 2.2 in l and 1.3 in l:
-                print "'X' WIN!"
-                b = 3
-            
-        elif b == 1:
-            p.append(a)
-            if 1.3 in p and 1.2 in p and 1.1 in p:
-                print "'O' WIN!"
-                b = 3
-            if 2.3 in p and 2.2 in p and 2.1 in p:
-                print "'O' WIN!"
-                b = 3
-            if 3.3 in p and 3.2 in p and 3.1 in p:
-                print "'O' WIN!"
-                b = 3
-            if 1.3 in p and 2.3 in p and 3.3 in p:
-                print "'O' WIN!"
-                b = 3
-            if 1.2 in p and 2.2 in p and 3.2 in p:
-                print "'O' WIN!"
-                b = 3
-            if 1.1 in p and 2.1 in p and 3.1 in p:
-                print "'O' WIN!"
-                b = 3
-            if 1.1 in p and 2.2 in p and 3.3 in p:
-                print "'O' WIN!"
-                b = 3
-            if 3.1 in p and 2.2 in p and 1.3 in p:
-                print "'O' WIN!"
-                b = 3
-        g = p + l
-        if len(g) == 9:
-            print "Game Over!"
-            break
-        if g.count(a) > 1 :
+        x = int(a) - 1
+        y = int(round(10 * (a - int(a))) - 1)
+
+
+        if d[x][y] != E:
             print "Sorry, that's not possible!"
-            if b == 1:
-                p.pop()
-            else:
-                l.pop()
             continue
         if b == 0:
-            exes(a).draw()
-    
+            d[x][y] = X
+            exes(x, y).draw()
+            if win():
+                print "'X' wins!!!"
+                b = 3
+            else:
+                b = 1
             pygame.display.flip()
-            b = 1
             continue
             
         if b == 1:        
-            circles(a).draw() 
-
-            b = 0
+            d[x][y] = O
+            circles(x, y).draw() 
+            if win():
+                print "'O' wins!!!"
+                b = 3
+            else:    
+                b = 0
             pygame.display.flip()
             continue
      
