@@ -97,7 +97,7 @@ while not done:
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
-                    a = pos.y//100 * pos.y%100  # TODO
+                    a = pos[0]//100 + 3 * (pos[1]//100)
     else:
         a = minmax(board[:], ai_p).index
     board[a] = c_player
