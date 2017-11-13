@@ -94,7 +94,10 @@ a = None
 while not done:
     if c_player == hu_p:
         while a is None or a not in free_spots(board):
-            a = int(input("Enter cell: "))
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONUP:
+                    pos = pygame.mouse.get_pos()
+                    a = pos.y//100 * pos.y%100  # TODO
     else:
         a = minmax(board[:], ai_p).index
     board[a] = c_player
