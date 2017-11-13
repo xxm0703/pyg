@@ -1,133 +1,117 @@
-import pdb
+import collections
 import pygame
-from math import pi
+
+Move = collections.namedtuple('Move', ['score', 'index'])
 
 pygame.init()
- 
-BLACK = (  0,   0,   0)
+
+BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 size = [300, 300]
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Tic Tac Toe")
 
-class exes (object):
-    def __init__(self, m):
-        self.x = (m%1*1000)-100
-        self.y = (m-m%1)*100-100
-    def draw(self):
-        pygame.draw.line(screen, BLACK, [self.x+6,self.y+6], [self.x+94, self.y+94], 3)
-        pygame.draw.line(screen, BLACK, [self.x+94,self.y+6], [self.x+6, self.y+94], 3)    
-        print self.x
-        print self.y
-class circles(object):
-    def __init__(self, m):
-        self.x = (m%1*1000)-100
-        self.y = (m-m%1)*100-100
-    def draw(self):
-        pygame.draw.ellipse(screen, BLACK, [self.x+6, self.y+6, 88, 88], 3)                   
+ai_p = 'X'
+hu_p = 'O'
+
+
+def free_spots(board):
+    return [x for x in board if x != ai_p and x != hu_p]
+
+
+def draw(board):
+    screen.fill(WHITE)
+    pygame.draw.line(screen, BLACK, [0, 100], [300, 100], 3)
+    pygame.draw.line(screen, BLACK, [0, 200], [300, 200], 3)
+    pygame.draw.line(screen, BLACK, [100, 0], [100, 300], 3)
+    pygame.draw.line(screen, BLACK, [200, 0], [200, 300], 3)
+    for i in range(9):
+        if board[i] == ai_p:
+            x = (i % 3) * 100
+            y = (i // 3) * 100
+            pygame.draw.line(screen, BLACK, [x + 6, y + 6], [x + 94, y + 94], 3)
+            pygame.draw.line(screen, BLACK, [x + 94, y + 6], [x + 6, y + 94], 3)
+        elif board[i] == hu_p:
+            x = (i % 3) * 100
+            y = (i // 3) * 100
+            pygame.draw.ellipse(screen, BLACK, [x + 6, y + 6, 88, 88], 3)
+
+    pygame.display.flip()
+
+
+def other_p(player):
+    return ai_p if player == hu_p else hu_p
+
+
+def winning(spot, player):
+    if (spot[0] == player and spot[1] == player and spot[2] == player) or \
+            (spot[3] == player and spot[4] == player and spot[5] == player) or \
+            (spot[6] == player and spot[7] == player and spot[8] == player) or \
+            (spot[0] == player and spot[3] == player and spot[6] == player) or \
+            (spot[1] == player and spot[4] == player and spot[7] == player) or \
+            (spot[2] == player and spot[5] == player and spot[8] == player) or \
+            (spot[0] == player and spot[4] == player and spot[8] == player) or \
+            (spot[2] == player and spot[4] == player and spot[6] == player):
+        return True
+    else:
+        return False
+
+
+def minmax(board, player):
+    moves = free_spots(board)
+    score = 20 if player == hu_p else -20
+    best_move = Move(score, 0)
+    static_board = board[:]
+    if not winning(board, other_p(player)):
+        for mv in moves:
+            board = static_board[:]
+            board[mv] = player
+            if not free_spots(board) or winning(board, player):
+                if winning(board, player):
+                    score = 10 if player == ai_p else -10
+                    return Move(score, mv)
+                return Move(0, mv)
+            move = minmax(board[:], other_p(player))
+            if player == hu_p and move.score < best_move.score:
+                best_move = Move(move.score, mv)
+            elif player == ai_p and move.score > best_move.score:
+                best_move = Move(move.score, mv)
+
+    return best_move
+
 
 done = False
-clock = pygame.time.Clock()
+board = [x for x in range(9)]
+draw(board)
 
+with open(".last_player", 'r') as f:
+    first_p = other_p(f.read())
+
+c_player = first_p
+a = None
 
 while not done:
-    clock.tick(10)
-    
-    screen.fill(WHITE)
-    y = 0
-    while y < 300:
-        x = 0    
-        while x < 300:
-             pygame.draw.rect(screen, BLACK, [x, y, 100, 100], 1)
-             x += 100
-        y += 100
-    pygame.display.flip()
-    b = 0
-    l = []
-    p = []
-    while b != 3:
-        a = input("Enter cell: ")
-        if b == 0:
-            l.append(a)
-            if 1.3 in l and 1.2 in l and 1.1 in l:
-                print "'X' WIN!"
-                b = 3
-            if 2.3 in l and 2.2 in l and 2.1 in l:
-                print "'X' WIN!"
-                b = 3
-            if 3.3 in l and 3.2 in l and 3.1 in l:
-                print "'X' WIN!"
-                b = 3
-            if 1.3 in l and 2.3 in l and 3.3 in l:
-                print "'X' WIN!"
-                b = 3
-            if 1.2 in l and 2.2 in l and 3.2 in l:
-                print "'X' WIN!"
-                b = 3
-            if 1.1 in l and 2.1 in l and 3.1 in l:
-                print "'X' WIN!"
-                b = 3
-            if 1.1 in l and 2.2 in l and 3.3 in l:
-                print "'X' WIN!"
-                b = 3
-            if 3.1 in l and 2.2 in l and 1.3 in l:
-                print "'X' WIN!"
-                b = 3
-            
-        elif b == 1:
-            p.append(a)
-            if 1.3 in p and 1.2 in p and 1.1 in p:
-                print "'O' WIN!"
-                b = 3
-            if 2.3 in p and 2.2 in p and 2.1 in p:
-                print "'O' WIN!"
-                b = 3
-            if 3.3 in p and 3.2 in p and 3.1 in p:
-                print "'O' WIN!"
-                b = 3
-            if 1.3 in p and 2.3 in p and 3.3 in p:
-                print "'O' WIN!"
-                b = 3
-            if 1.2 in p and 2.2 in p and 3.2 in p:
-                print "'O' WIN!"
-                b = 3
-            if 1.1 in p and 2.1 in p and 3.1 in p:
-                print "'O' WIN!"
-                b = 3
-            if 1.1 in p and 2.2 in p and 3.3 in p:
-                print "'O' WIN!"
-                b = 3
-            if 3.1 in p and 2.2 in p and 1.3 in p:
-                print "'O' WIN!"
-                b = 3
-        g = p + l
-        if len(g) == 9:
-            print "Game Over!"
-            break
-        if g.count(a) > 1 :
-            print "Sorry, that's not possible!"
-            if b == 1:
-                p.pop()
-            else:
-                l.pop()
-            continue
-        if b == 0:
-            exes(a).draw()
-    
-            pygame.display.flip()
-            b = 1
-            continue
-            
-        if b == 1:        
-            circles(a).draw() 
+    if c_player == hu_p:
+        while a is None or a not in free_spots(board):
+            a = int(input("Enter cell: "))
+    else:
+        a = minmax(board[:], ai_p).index
+    board[a] = c_player
+    draw(board)
+    if winning(board, c_player) or not free_spots(board):
+        break
 
-            b = 0
-            pygame.display.flip()
-            continue
-     
-    for event in pygame.event.get(): # User did something
-        if event.type == pygame.QUIT: # If user clicked close
-            done=True # Flag that we are done so we exit this loop
+    c_player = other_p(c_player)
 
+    for event in pygame.event.get():  # User did something
+        if event.type == pygame.QUIT:  # If user clicked close
+            done = True  # Flag that we are done so we exit this loop
+if not done:
+    if not free_spots(board):
+        print("DRAW")
+    else:
+        print("{0} WINS!".format(c_player))
+with open(".last_player", 'w') as f:
+    f.write(first_p)
 pygame.quit()
