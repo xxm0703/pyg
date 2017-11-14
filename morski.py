@@ -1,4 +1,5 @@
 import collections
+
 import pygame
 import socket
 
@@ -95,13 +96,18 @@ def lan():
         dat = s.recv(1024)
         if dat != '':
             break
-    if dat[0] == "Y":
+    print(dat)
+
+    if dat[-1] == "Y":
         s.send(str(p_inp()))
+        print("Send Y")
         data = s.recv(1024)
-        return int(data)
-    elif dat[0] == "O":
+        print("rec Y")
+        return int(data[0])
+    else:
         data = s.recv(1024)
-        return int(data)
+        print("rec O")
+        return int(data[0])
 
 
 def p_inp():
@@ -135,7 +141,9 @@ while not done:
 
     if g_type == 1:
         a = bot(c_player)
+
     elif g_type == 2:
+        print("IN")
         a = lan()
     else:
         a = p_inp()

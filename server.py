@@ -1,4 +1,5 @@
 import socket
+import time
 
 s = socket.socket()
 s.bind(('192.168.1.102', 50000))
@@ -10,6 +11,7 @@ while True:
     print("Second connect")
 
     for x in range(9):
+        time.sleep(1)
         data = ''  # data = '3'
         if x % 2:
             print("c2")
@@ -19,6 +21,7 @@ while True:
                 data = c2.recv(1024)
                 if data != '':
                     break
+            print(data)
             c2.send(str(data))
             c1.send(str(data))
         else:
@@ -29,5 +32,6 @@ while True:
                 data = c1.recv(1024)
                 if data != '':
                     break
+            print(data)
             c1.send(str(data))
             c2.send(str(data))
