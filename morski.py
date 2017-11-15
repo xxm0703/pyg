@@ -91,15 +91,17 @@ def minmax(b, player):
     return best_move
 
 
-def lan():
+def lan(br):
     while True:
         dat = s.recv(1024)
         if dat != '':
             break
     print(dat)
-
+    sp = -1
     if dat[-1] == "Y":
-        s.send(str(p_inp()))
+        while sp not in free_spots(br):
+            sp = p_inp(br)
+        s.send(str(sp))
         print("Send Y")
         data = s.recv(1024)
         print("rec Y")
@@ -110,9 +112,9 @@ def lan():
         return int(data[0])
 
 
-def p_inp():
+def p_inp(br):
     i = None
-    while i is None or i not in free_spots(board):
+    while i is None or i not in free_spots(br):
         for e in pygame.event.get():
             if e.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
@@ -144,7 +146,7 @@ while not done:
 
     elif g_type == 2:
         print("IN")
-        a = lan()
+        a = lan(board)
     else:
         a = p_inp()
     board[a] = c_player
